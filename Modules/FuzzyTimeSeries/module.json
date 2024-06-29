@@ -1,0 +1,11 @@
+{
+    "name": "FuzzyTimeSeries",
+    "alias": "fuzzytimeseries",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FuzzyTimeSeries\\Providers\\FuzzyTimeSeriesServiceProvider"
+    ],
+    "files": []
+}

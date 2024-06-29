@@ -36,3 +36,9 @@ Breadcrumbs::for('dataEmas', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Data Emas', url('master/dataEmas'));
 });
+
+// Home > analisis
+Breadcrumbs::for('analisis', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Analisis', url('master/analisis'));
+});

@@ -2,6 +2,7 @@
 
 namespace App\Http\Helpers;
 
+use App\Models\DataEmas;
 use App\Models\Menu;
 use App\Models\Pembelian;
 use App\Models\Pengaturan;
@@ -299,7 +300,7 @@ class UtilsHelper
     }
     public static function formatNumber($nominal)
     {
-        return number_format($nominal, 3, ',', '.');
+        return number_format($nominal, 4, ',', '.');
     }
 
     public static function forNumberValue($nominal)
@@ -498,5 +499,152 @@ class UtilsHelper
         }
         echo  '
             </ol>';
+    }
+    public static function fuzzyTimeSeriesChen()
+    {
+        $save_metode = [];
+
+        $dataEmas = DataEmas::all();
+        $save_metode['dataEmas'] = $dataEmas;
+        $array_dataEmas = [];
+        foreach ($dataEmas as $key => $value) {
+            $array_dataEmas[$value->id] = doubleval($value->harga_dataemas);
+        }
+        $valuesArrayDataEmas = array_values($array_dataEmas);
+        $save_metode['harga'] = $valuesArrayDataEmas;
+
+        $min = min($array_dataEmas);
+        $max = max($array_dataEmas);
+        $banyakKelas = 1 + 3.3 * log10(count($array_dataEmas));
+        $rentangKelas = ($max - $min);
+        $intervalKelas = $rentangKelas / floor($banyakKelas);
+
+        $save_metode['min'] = $min;
+        $save_metode['max'] = $max;
+        $save_metode['banyakKelas'] = $banyakKelas;
+        $save_metode['rentangKelas'] = $rentangKelas;
+        $save_metode['intervalKelas'] = $intervalKelas;
+
+        $intervalYangTerbentuk = [];
+        $intervalYangTerbentuk[0] = $min;
+        for ($i = 1; $i <= floor($banyakKelas); $i++) {
+            $intervalYangTerbentuk[$i] = $intervalYangTerbentuk[$i - 1] + $intervalKelas;
+        }
+        $dataSebelumnya = [];
+        foreach ($intervalYangTerbentuk as $key => $value) {
+            if ($key > 0) {
+                $getData = $intervalYangTerbentuk[$key - 1];
+                $dataSebelumnya[$key] = doubleval($getData);
+            }
+        }
+        $nameInterval = [];
+        foreach ($intervalYangTerbentuk as $key => $value) {
+            if ($key > 0) {
+                $nameInterval[$key] = 'A' . $key;
+            }
+        }
+
+        $rangeNameInterval = [];
+        foreach ($nameInterval as $key => $value) {
+            $rangeNameInterval[$value] = $dataSebelumnya[$key] . ' - ' . $intervalYangTerbentuk[$key];
+        }
+        $save_metode['rangeNameInterval'] = $rangeNameInterval;
+
+        $fuzzifikasi = [];
+        foreach ($array_dataEmas as $key => $value) {
+            foreach ($rangeNameInterval as $key2 => $value2) {
+                $explode = explode(' - ', $value2);
+                if ($value >= $explode[0] && $value <= $explode[1]) {
+                    $fuzzifikasi[$key] = $key2;
+                }
+            }
+        }
+        $valuesFuzzifikasi = array_values($fuzzifikasi);
+        $save_metode['fuzzifikasi'] = $valuesFuzzifikasi;
+
+        $flr = [];
+        $valuesFuzzifikasi = array_values($fuzzifikasi);
+        foreach ($valuesFuzzifikasi as $key => $value) {
+            if ($key == 0) {
+                $flr[$key] = 'NA';
+            } else {
+                $flr[$key] = $valuesFuzzifikasi[$key - 1];
+            }
+        }
+        $mergeFlr = [];
+        foreach ($flr as $key => $value) {
+            $mergeFlr[] = $value . ' -> ' . $valuesFuzzifikasi[$key];
+        }
+        $flr = $mergeFlr;
+        $save_metode['flr'] = $flr;
+
+        $groupedFlr = [];
+        foreach ($flr as $relation) {
+            list($left, $right) = explode(' -> ', $relation);
+            if (!isset($groupedFlr[$left])) {
+                $groupedFlr[$left] = [];
+            }
+            $groupedFlr[$left][] = $right;
+        }
+
+        $getGroupedFlr = [];
+        foreach ($groupedFlr as $key => $value) {
+            if ($key != 'NA') {
+                $getGroupedFlr[$key] = implode(', ', array_unique($value));
+            }
+        }
+        $save_metode['getGroupedFlr'] = $getGroupedFlr;
+
+        $averageIntervalTerbentuk = [];
+        foreach ($intervalYangTerbentuk as $key => $value) {
+            if ($key > 0) {
+                $averageIntervalTerbentuk[$nameInterval[$key]] = ($dataSebelumnya[$key] + $intervalYangTerbentuk[$key]) / 2;
+            }
+        }
+        $save_metode['averageIntervalTerbentuk'] = $averageIntervalTerbentuk;
+
+
+        $averageFlrg = [];
+        foreach ($getGroupedFlr as $key => $value) {
+            $explode = explode(', ', $value);
+            $sum = 0;
+            foreach ($explode as $key2 => $value2) {
+                $sum += $averageIntervalTerbentuk[$value2];
+            }
+            $averageFlrg[$key] = $sum / count($explode);
+        }
+        $save_metode['averageFlrg'] = $averageFlrg;
+
+        $nilaiFlrg = [];
+        foreach ($fuzzifikasi as $key => $value) {
+            $nilaiFlrg[] = $averageFlrg[$value];
+        }
+        $save_metode['nilaiFlrg'] = $nilaiFlrg;
+
+        $peramalan = [];
+        $peramalan[0] = 'NA';
+        foreach ($nilaiFlrg as $key => $value) {
+            if ($key > 0) {
+                $peramalan[$key] = $nilaiFlrg[$key - 1];
+            }
+        }
+        $save_metode['peramalan'] = $peramalan;
+
+        $peramalan[count($peramalan)] = end($nilaiFlrg);
+        $save_metode['next_peramalan'] = end($nilaiFlrg);
+
+        $mape = [];
+        $dataAsli = array_values($array_dataEmas);
+        $dataNilaiFlrg = array_values($nilaiFlrg);
+        $sum = 0;
+        foreach ($dataAsli as $key => $value) {
+            $calculate = abs(($value - $dataNilaiFlrg[$key]) / $value);
+            $mape[] = $calculate;
+            $sum += abs(($value - $dataNilaiFlrg[$key]) / $value);
+        }
+        $save_metode['mape'] = $mape;
+        $averageMape = ($sum / count($mape)) * 100;
+        $save_metode['averageMape'] = $averageMape;
+        return $save_metode;
     }
 }

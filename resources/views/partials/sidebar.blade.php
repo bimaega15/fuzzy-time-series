@@ -37,6 +37,12 @@
                 <div data-i18n="Data Emas">Data Emas</div>
             </a>
         </li>
+        <li class="menu-item {{ request()->is('fuzzytimeseries/analisis') ? 'active' : '' }}">
+            <a href="{{ url('fuzzytimeseries/analisis') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bxs-analyse'></i>
+                <div data-i18n="Data Emas">Analisis Metode</div>
+            </a>
+        </li>
 
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Konfigurasi</span></li>
         <li class="menu-item {{ request()->is('setting/user') ? 'active' : '' }}">
