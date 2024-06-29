@@ -30,6 +30,14 @@
                 <div data-i18n="Basic">My Profile</div>
             </a>
         </li>
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Fuzzy Time Series</span></li>
+        <li class="menu-item {{ request()->is('master/dataEmas') ? 'active' : '' }}">
+            <a href="{{ url('master/dataEmas') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bxs-book-content'></i>
+                <div data-i18n="Data Emas">Data Emas</div>
+            </a>
+        </li>
+
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Konfigurasi</span></li>
         <li class="menu-item {{ request()->is('setting/user') ? 'active' : '' }}">
             <a href="{{ url('setting/user') }}" class="menu-link">

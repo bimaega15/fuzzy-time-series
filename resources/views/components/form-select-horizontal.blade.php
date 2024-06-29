@@ -1,9 +1,9 @@
-@props(['label', 'name', 'data' => [], 'value' => ''])
+@props(['label', 'name', 'data' => [], 'value' => '', 'class' => ''])
 
 <div class="row mb-3">
     <label for="{{ $name }}" class="form-label col-sm-3">{{ $label }}</label>
     <div class="col-sm-9">
-        <select name="{{ $name }}" class="form-select" id="{{ $name }}">
+        <select name="{{ $name }}" class="form-select {{ $class }}" id="{{ $name }}">
             <option selected value="">-- Pilih {{ $label }} --</option>
             @foreach ($data as $index => $item)
                 @php

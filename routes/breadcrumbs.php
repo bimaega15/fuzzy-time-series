@@ -1,8 +1,6 @@
 <?php
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
-
-
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
 // Home
@@ -32,8 +30,9 @@ Breadcrumbs::for('menu', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Menu', url('setting/menu'));
 });
-// Home > analisis
-Breadcrumbs::for('analisis', function (BreadcrumbTrail $trail) {
+
+// Home > dataEmas
+Breadcrumbs::for('dataEmas', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
-    $trail->push('Analisis', url('backpropagation/analisis'));
+    $trail->push('Data Emas', url('master/dataEmas'));
 });

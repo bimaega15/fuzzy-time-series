@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('data_emas', function (Blueprint $table) {
             $table->id();
+            $table->string('tahun_dataemas');
+            $table->string('bulan_dataemas');
+            $table->double('harga_dataemas');
             $table->timestamps();
         });
     }
