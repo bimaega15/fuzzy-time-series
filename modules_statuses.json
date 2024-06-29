@@ -1,0 +1,11 @@
+{
+    "Auth": true,
+    "Master": true,
+    "Transaction": true,
+    "Report": true,
+    "Setting": true,
+    "Purchase": true,
+    "Dashboard": true,
+    "Backpropagation": true,
+    "FuzzyTimeSeriesChain": true
+}

@@ -1,0 +1,11 @@
+{
+    "name": "FuzzyTimeSeriesChain",
+    "alias": "fuzzytimeserieschain",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FuzzyTimeSeriesChain\\Providers\\FuzzyTimeSeriesChainServiceProvider"
+    ],
+    "files": []
+}
