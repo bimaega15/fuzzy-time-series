@@ -11,7 +11,7 @@
 |
 */
 
-Route::prefix('fuzzytimeseries')->group(function() {
+Route::prefix('fuzzytimeseries')->middleware('auth')->group(function() {
     Route::get('/', 'FuzzyTimeSeriesController@index');
     Route::get('/analisis', 'AnalisisController@index');
 });

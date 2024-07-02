@@ -40,7 +40,7 @@
         <li class="menu-item {{ request()->is('fuzzytimeseries/analisis') ? 'active' : '' }}">
             <a href="{{ url('fuzzytimeseries/analisis') }}" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-analyse'></i>
-                <div data-i18n="Data Emas">Analisis Metode</div>
+                <div data-i18n="Data Emas">Analisa Data</div>
             </a>
         </li>
 
